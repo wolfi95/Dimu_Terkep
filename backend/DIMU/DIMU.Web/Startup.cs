@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DIMU.BLL.ServiceInterfaces;
+using DIMU.BLL.Services;
 using DIMU.DAL;
 using DIMU.DAL.Entities.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +34,8 @@ namespace DIMU.Web
             services.AddCors();
             services.AddAuthorization();
             services.AddDbContext<DimuContext>(o => o.UseSqlServer(Configuration.GetConnectionString(nameof(DimuContext))));
+
+            services.AddTransient<IAdminService, AdminService>();
 
             services.Configure<IdentityOptions>(options =>
             {
