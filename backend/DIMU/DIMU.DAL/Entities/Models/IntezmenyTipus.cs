@@ -6,17 +6,29 @@ namespace DIMU.DAL.Entities.Models
 {
     public enum IntezmenyTipus
     {
-        //Állami intézmény
-        Allami = 0,
-        //Önkormányzat által fenntartott intézmény
-        Onkormanyzati = 1,
+        //Állami Múzeum
+        AllamiMuzeum = 0,
+        //Állami kulturális központ
+        AllamiKulturalis = 1,
+        //Önkormányzat múzeum
+        OnkormanyzatiMuzeum = 2,
+        //Önkormányzati kulturális központ
+        OnkormanyzatiKulturalis = 3,
+        //Önkormányzati galéria
+        OnkormanyzatiGaleria = 4,
         //Kereskedelmi galéria
-        KereskedelmiGaleria = 2,
-        //Non profit intézmény
-        NonProfit = 3,
-        //Kulturális intézet, egyesület
-        Kulturalis = 4,
+        KereskedelmiGaleria = 5,
+        //Független kulturálisintézmény
+        FuggetlenKulturalisIntezmeny = 6,
+        //Non profit galéria
+        NonProfitGaleria = 7,
+        //Kulturális intézet
+        KulturalisIntezet = 8,
+        //Egyesület
+        Egyesulet = 9,
         //Oktatási intézmény
-        Oktatasi = 5
+        Oktatasi = 10,
+        //Étterem, kocsma galéria
+        EtteremKocsmaGaleria = 11,
     }
 }

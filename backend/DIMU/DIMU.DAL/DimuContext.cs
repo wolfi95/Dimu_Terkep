@@ -11,7 +11,9 @@ namespace DIMU.DAL
     public class DimuContext : IdentityDbContext<AdminUser>
     {
         public DbSet<Intezmeny> Intezmenyek { get; set; }
-        public DbSet<Muvesz> Muveszek { get; set; }
+        public DbSet<Esemeny> Esemenyek { get; set; }
+        public DbSet<IntezmenyHelyszin> IntezmenyHelyszinek { get; set; }
+        public DbSet<IntezmenyVezeto> IntezmenyVezetok { get; set; }
 
         public DimuContext(DbContextOptions<DimuContext> options) : base(options)
         {
@@ -32,7 +34,11 @@ namespace DIMU.DAL
                 .WithOne(iv => iv.Intezmeny);
 
             modelBuilder.Entity<Intezmeny>()
-                .HasMany<Muvesz>(intezmeny => intezmeny.Muveszek)
+                .HasMany<IntezmenyHelyszin>(intezmeny => intezmeny.IntezmenyHelyszinek)
+                .WithOne(muv => muv.Intezmeny);
+            
+            modelBuilder.Entity<Intezmeny>()
+                .HasMany<Esemeny>(intezmeny => intezmeny.Esemenyek)
                 .WithOne(muv => muv.Intezmeny);
         }
     }

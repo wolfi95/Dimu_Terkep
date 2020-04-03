@@ -4,12 +4,12 @@ using System.Text;
 
 namespace DIMU.DAL.Entities.Models
 {
-    public class IntezmenyVezeto
+    public class IntezmenyHelyszin
     {
         public Guid Id { get; set; }
-        public String Nev { get; set; }
-        public int Tol { get; set; }
-        public int Ig { get; set; }        
+        public string Helyszin { get; set; }
+        public int Nyitas { get; set; }
+        public int? Koltozes { get; set; }
         public Guid IntezmenyId { get; set; }
         public Intezmeny Intezmeny { get; set; }
     }
