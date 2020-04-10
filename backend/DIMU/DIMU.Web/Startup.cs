@@ -41,6 +41,7 @@ namespace DIMU.Web
             services.AddDbContext<DimuContext>(o => o.UseSqlServer(Configuration.GetConnectionString(nameof(DimuContext))));
 
             services.AddTransient<IAdminService, AdminService>();
+            services.AddTransient<IIntezmenyService, IntezmenyService>();
 
             services.Configure<IdentityOptions>(options =>
             {
