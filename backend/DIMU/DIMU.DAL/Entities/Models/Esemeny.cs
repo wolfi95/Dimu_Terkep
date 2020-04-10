@@ -8,7 +8,7 @@ namespace DIMU.DAL.Entities.Models
     {
         public Guid Id { get; set; }
         public string Nev { get; set; }
-        public DateTime Datum { get; set; }
+        public string Datum { get; set; }
         public string Szervezo { get; set; }
         public Guid IntezmenyId { get; set; }
         public Intezmeny Intezmeny { get; set; }

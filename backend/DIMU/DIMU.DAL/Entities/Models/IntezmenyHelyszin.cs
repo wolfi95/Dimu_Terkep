@@ -12,5 +12,7 @@ namespace DIMU.DAL.Entities.Models
         public int? Koltozes { get; set; }
         public Guid IntezmenyId { get; set; }
         public Intezmeny Intezmeny { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }
