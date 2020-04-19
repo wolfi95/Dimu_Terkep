@@ -17,11 +17,23 @@ namespace DIMU.DAL
 
         public DimuContext(DbContextOptions<DimuContext> options) : base(options)
         {
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           
+            var builder = new PostgreSqlConnectionStringBuilder(Environment.GetEnvironmentVariable("DATABASE_URL"))
+            {
+                Pooling = true,
+                TrustServerCertificate = true,
+                SslMode = SslMode.Require
+            };
+            var connectionUrl = builder.ConnectionString;
+            optionsBuilder.UseNpgsql(connectionUrl, builder =>
+            {
+                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            });
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,7 +48,7 @@ namespace DIMU.DAL
             modelBuilder.Entity<Intezmeny>()
                 .HasMany<IntezmenyHelyszin>(intezmeny => intezmeny.IntezmenyHelyszinek)
                 .WithOne(muv => muv.Intezmeny);
-            
+
             modelBuilder.Entity<Intezmeny>()
                 .HasMany<Esemeny>(intezmeny => intezmeny.Esemenyek)
                 .WithOne(muv => muv.Intezmeny);

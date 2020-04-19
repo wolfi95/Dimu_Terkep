@@ -38,7 +38,7 @@ namespace DIMU.Web
             services.AddControllers();
             services.AddCors();
 
-            services.AddDbContext<DimuContext>(o => o.UseSqlServer(Configuration.GetConnectionString(nameof(DimuContext))));
+            services.AddDbContext<DimuContext>(o => o.UseNpgsql(Configuration.GetConnectionString(nameof(DimuContext))));
 
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IIntezmenyService, IntezmenyService>();
