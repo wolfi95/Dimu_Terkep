@@ -58,6 +58,7 @@ namespace DIMU.Web
 
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IIntezmenyService, IntezmenyService>();
+            services.AddTransient<IImporterService, ImporterService>();
 
             services.Configure<IdentityOptions>(options =>
             {

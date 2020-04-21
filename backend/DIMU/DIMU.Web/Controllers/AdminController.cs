@@ -45,20 +45,28 @@ namespace DIMU.Web.Controllers
 
         [HttpPost]
         [Route("importdata")]
-        public async Task<IActionResult> ImportFromExcel()
+        public async Task<ActionResult<List<String>>> ImportFromExcel()
         {
-            var file = Request.Form.Files.FirstOrDefault();
-
+            Microsoft.AspNetCore.Http.IFormFile file=null;
             try
             {
-                await _importerService.ImportIntezmenyekFromExcel(file.OpenReadStream());
+                file = Request.Form.Files.FirstOrDefault();
+            }
+            catch
+            {
+
+            }
+            List<string> log = new List<string>();
+            try
+            {
+                log = await _importerService.ImportIntezmenyekFromExcel(file?.OpenReadStream());
             }
             catch(Exception e)
             {
                 return BadRequest(e);
             }
 
-            return Ok();
+            return Ok(log);
         }
 
         [HttpPost]

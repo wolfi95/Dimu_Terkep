@@ -9,7 +9,7 @@ namespace DIMU.DAL.Entities.Models
         public Guid Id { get; set; }
         public String Nev { get; set; }
         public int Tol { get; set; }
-        public int Ig { get; set; }        
+        public int? Ig { get; set; }        
         public Guid IntezmenyId { get; set; }
         public Intezmeny Intezmeny { get; set; }
     }

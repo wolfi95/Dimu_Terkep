@@ -6,7 +6,7 @@ namespace DIMU.DAL.Entities.Models
 {
     public enum IntezmenyTipus
     {
-        //Állami Múzeum
+        //Állami múzeum
         AllamiMuzeum = 0,
         //Állami kulturális központ
         AllamiKulturalis = 1,
@@ -18,7 +18,7 @@ namespace DIMU.DAL.Entities.Models
         OnkormanyzatiGaleria = 4,
         //Kereskedelmi galéria
         KereskedelmiGaleria = 5,
-        //Független kulturálisintézmény
+        //Független kulturális intézmény
         FuggetlenKulturalisIntezmeny = 6,
         //Non profit galéria
         NonProfitGaleria = 7,

@@ -22,18 +22,36 @@ namespace DIMU.BLL.Services
 
         public async Task<IntezmenyDetailDto> GetIntezmenyAsync(Guid id)
         {
-            var intezmeny = await context.Intezmenyek.FindAsync(id);
+            var intezmeny = await context.Intezmenyek
+                                    .Include(i => i.IntezmenyHelyszinek)
+                                    .Include(i => i.IntezmenyVezetok)
+                                    .Include(i => i.Esemenyek)
+                                    .Where(i => i.Id == id)
+                                    .FirstOrDefaultAsync();
 
             if (intezmeny == null)
                 return null;
+
+            List<string> ivk = new List<string>();
+            foreach(var iv in intezmeny.IntezmenyVezetok)
+            {
+                if (iv.Ig != null)
+                {
+                    ivk.Add(new string(iv.Nev + " " + iv.Tol.ToString() + " - " + iv.Ig.ToString()));
+                }
+                else
+                {
+                    ivk.Add(new string(iv.Nev + " " + iv.Tol.ToString() + "-" + "től"));
+                }
+            }
 
             return new IntezmenyDetailDto
             {
                 Nev = intezmeny.Nev,
                 Alapitas = intezmeny.Alapitas,
                 Megszunes = intezmeny.Megszunes,
-                IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => ih.Helyszin + "(" + ih.Nyitas.ToString() + " - " + ih.Koltozes?.ToString() + ")").ToList(),
-                IntezmenyVezetok = intezmeny.IntezmenyVezetok.Select(iv => iv.Nev + " " + iv.Tol.ToString() + " -" + iv.Ig != null ? iv.Ig.ToString() : "től").ToList(),
+                IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => ih.Helyszin + " (" + ih.Nyitas.ToString() + " - " + ih.Koltozes?.ToString() + ")").ToList(),
+                IntezmenyVezetok = ivk,
                 Leiras = intezmeny.Leiras,
                 Esemenyek = intezmeny.Esemenyek.Select(e => e.Datum + " " + e.Szervezo + ": " + e.Nev).ToList(),
                 Link = intezmeny.Link,

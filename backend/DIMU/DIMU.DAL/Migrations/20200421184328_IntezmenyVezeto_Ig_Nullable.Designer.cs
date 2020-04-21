@@ -3,15 +3,17 @@ using System;
 using DIMU.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DIMU.DAL.Migrations
 {
     [DbContext(typeof(DimuContext))]
-    partial class DimuContextModelSnapshot : ModelSnapshot
+    [Migration("20200421184328_IntezmenyVezeto_Ig_Nullable")]
+    partial class IntezmenyVezeto_Ig_Nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

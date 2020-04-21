@@ -20,8 +20,8 @@ namespace DIMU.Web.Controllers
             this.intezmenyService = intezmenyService;
         }
 
-        // GET: api/Intezmeny
-        [HttpGet]
+        // POST: api/Intezmeny
+        [HttpPost]
         public async Task<IEnumerable<IntezmenyPinDto>> GetIntezmenyek(IntezmenySearchParams searchParams)
         {
             return await intezmenyService.GetIntezmenyekAsync(searchParams);
@@ -75,6 +75,7 @@ namespace DIMU.Web.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
+        [Route("/api/Intezemeny/new")]
         [Authorize]
         public async Task<ActionResult<Intezmeny>> PostIntezmeny(Intezmeny intezmeny)
         {
