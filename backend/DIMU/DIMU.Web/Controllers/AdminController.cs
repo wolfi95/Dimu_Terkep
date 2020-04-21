@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DIMU.Web.Controllers
@@ -20,13 +21,15 @@ namespace DIMU.Web.Controllers
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
+        private readonly IImporterService _importerService;
         private readonly SignInManager<AdminUser> _signInManager;
         private readonly UserManager<AdminUser> _userManager;
         private readonly IConfiguration _configuration;
 
-        public AdminController(IAdminService adminService, SignInManager<AdminUser> signInManager, UserManager<AdminUser> userManager, IConfiguration configuration)
+        public AdminController(IAdminService adminService, IImporterService importerService, SignInManager<AdminUser> signInManager, UserManager<AdminUser> userManager, IConfiguration configuration)
         {
             _adminService = adminService;
+            _importerService = importerService;
             _signInManager = signInManager;
             _userManager = userManager;
             _configuration = configuration;
@@ -38,6 +41,24 @@ namespace DIMU.Web.Controllers
         {
             var result = await _adminService.Hello();
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("importdata")]
+        public async Task<IActionResult> ImportFromExcel()
+        {
+            var file = Request.Form.Files.FirstOrDefault();
+
+            try
+            {
+                await _importerService.ImportIntezmenyekFromExcel(file.OpenReadStream());
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e);
+            }
+
+            return Ok();
         }
 
         [HttpPost]
