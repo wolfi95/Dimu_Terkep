@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DIMU.Web.Controllers
@@ -38,6 +39,15 @@ namespace DIMU.Web.Controllers
         {
             var result = await _adminService.Hello();
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("importdata")]
+        public async Task<IActionResult> ImportFromExcel()
+        {
+            Request.HttpContext.WebSockets.;
+
+            return Ok();
         }
 
         [HttpPost]
