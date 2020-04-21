@@ -2,6 +2,7 @@
 using DIMU.DAL.Entities.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,19 +11,29 @@ namespace DIMU.DAL
 {
     public class DimuContext : IdentityDbContext<AdminUser>
     {
+        private readonly IConfiguration _configuration;
         public DbSet<Intezmeny> Intezmenyek { get; set; }
         public DbSet<Esemeny> Esemenyek { get; set; }
         public DbSet<IntezmenyHelyszin> IntezmenyHelyszinek { get; set; }
         public DbSet<IntezmenyVezeto> IntezmenyVezetok { get; set; }
 
-        public DimuContext(DbContextOptions<DimuContext> options) : base(options)
+        public DimuContext(DbContextOptions<DimuContext> options, IConfiguration configuration) : base(options)
         {
-
+            _configuration = configuration;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var builder = new PostgreSqlConnectionStringBuilder(Environment.GetEnvironmentVariable("DATABASE_URL"))
+            var connectionString = "";
+            if (Environment.GetEnvironmentVariable("DATABASE_URL") == null)
+            {
+                connectionString = _configuration.GetConnectionString(nameof(DimuContext));
+            }
+            else
+            {
+                connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+            }
+            var builder = new PostgreSqlConnectionStringBuilder(connectionString)
             {
                 Pooling = true,
                 TrustServerCertificate = true,

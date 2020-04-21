@@ -38,7 +38,23 @@ namespace DIMU.Web
             services.AddControllers();
             services.AddCors();
 
-            services.AddDbContext<DimuContext>(o => o.UseNpgsql(Configuration.GetConnectionString(nameof(DimuContext))));
+            var connectionString = "";
+            if (Environment.GetEnvironmentVariable("DATABASE_URL") == null)
+            {
+                connectionString = Configuration.GetConnectionString(nameof(DimuContext));
+            }
+            else
+            {
+                connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+            }
+            var builder = new PostgreSqlConnectionStringBuilder(connectionString)
+            {
+                Pooling = true,
+                TrustServerCertificate = true,
+                SslMode = SslMode.Require
+            };
+            var connectionUrl = builder.ConnectionString;
+            services.AddDbContext<DimuContext>(o => o.UseNpgsql(connectionUrl));
 
             services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IIntezmenyService, IntezmenyService>();
@@ -70,7 +86,7 @@ namespace DIMU.Web
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(cfg =>
-                {                    
+                {
                     cfg.RequireHttpsMetadata = false;
                     cfg.SaveToken = true;
                     cfg.TokenValidationParameters = new TokenValidationParameters
@@ -116,7 +132,7 @@ namespace DIMU.Web
                         new List<string>()
                     }
                 });
-            });            
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -154,7 +170,7 @@ namespace DIMU.Web
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
