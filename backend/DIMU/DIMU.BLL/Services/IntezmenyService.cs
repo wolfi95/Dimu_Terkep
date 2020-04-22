@@ -63,40 +63,40 @@ namespace DIMU.BLL.Services
 
         public async Task<IEnumerable<IntezmenyPinDto>> GetIntezmenyekAsync(IntezmenySearchParams searchParams)
         {
-           var intezemenyQuery = context.Intezmenyek
+           IQueryable<Intezmeny> intezemenyQuery = context.Intezmenyek
                                     .Include(i => i.Esemenyek)
                                     .Include(i => i.IntezmenyHelyszinek)
                                     .Include(i => i.IntezmenyVezetok);
-            
+
             if (!String.IsNullOrEmpty(searchParams.IntezmenyCim))
             {
-                intezemenyQuery.Where(i => i.IntezmenyHelyszinek.Any(ih => ih.Helyszin.Contains(searchParams.IntezmenyCim)));
+                intezemenyQuery = intezemenyQuery.Where(i => i.IntezmenyHelyszinek.Any(ih => ih.Helyszin.Contains(searchParams.IntezmenyCim)));
             }
 
             if (!String.IsNullOrEmpty(searchParams.IntezmenyNev))
             {
-                intezemenyQuery.Where(i => i.Nev.Contains(searchParams.IntezmenyNev));
+                intezemenyQuery = intezemenyQuery.Where(i => i.Nev.Contains(searchParams.IntezmenyNev));
             }
             //TODO: idot is nezzen ha kell(nincs tisztazva)
             if (!String.IsNullOrEmpty(searchParams.IntezmenyVezeto))
             {
-                intezemenyQuery.Where(i => i.IntezmenyVezetok.Any(iv => iv.Nev.Contains(searchParams.IntezmenyCim)));
+                intezemenyQuery = intezemenyQuery.Where(i => i.IntezmenyVezetok.Any(iv => iv.Nev.Contains(searchParams.IntezmenyCim)));
             }
 
             if(searchParams.IntezmenyTipus != null)
             {
-                intezemenyQuery.Where(i => i.Tipus == searchParams.IntezmenyTipus);
+                intezemenyQuery = intezemenyQuery.Where(i => i.Tipus == searchParams.IntezmenyTipus);
             }
 
             if (searchParams.MukodesIg != null)
             {
                 //intezmenyre vonatkozo
-                intezemenyQuery.Where(i => i.Alapitas <= searchParams.MukodesIg);                
+                intezemenyQuery = intezemenyQuery.Where(i => i.Alapitas <= searchParams.MukodesIg);                
             }
 
             if (searchParams.MukodesTol != null)
             {                
-                intezemenyQuery.Where(i => i.Megszunes >= searchParams.MukodesTol || i.Megszunes == null);
+                intezemenyQuery = intezemenyQuery.Where(i => i.Megszunes >= searchParams.MukodesTol || i.Megszunes == null);
             }
 
             return await intezemenyQuery.SelectMany( i => i.IntezmenyHelyszinek
