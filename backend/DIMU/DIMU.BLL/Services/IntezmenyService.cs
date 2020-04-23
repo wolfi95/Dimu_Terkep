@@ -85,7 +85,7 @@ namespace DIMU.BLL.Services
 
             if(searchParams.IntezmenyTipus != null)
             {
-                intezemenyQuery = intezemenyQuery.Where(i => i.Tipus == searchParams.IntezmenyTipus);
+                intezemenyQuery = intezemenyQuery.Where(i => searchParams.IntezmenyTipus.Contains(i.Tipus));
             }
 
             if (searchParams.MukodesIg != null)
