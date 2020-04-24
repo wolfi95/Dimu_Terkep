@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -50,6 +51,7 @@ namespace DIMU.BLL.Services
                 string Tipus;
                 string IntezmenyVezetok;
                 string Leiras;
+                string Kepek;
                 string Video;
                 string Hivatkozasok;
                 string Social;
@@ -137,9 +139,10 @@ namespace DIMU.BLL.Services
                     }
                     IntezmenyVezetok = fields[8];
                     Leiras = fields[9];
-                    Video = fields[10];
-                    Hivatkozasok = fields[11];
-                    Social = fields[12];
+                    Kepek = fields[10];
+                    Video = fields[11];
+                    Hivatkozasok = fields[12];
+                    Social = fields[13];
 
                     var intezmeny = await context.Intezmenyek
                         .Include(intezmeny => intezmeny.IntezmenyVezetok)
@@ -158,7 +161,7 @@ namespace DIMU.BLL.Services
                             }
                             catch
                             {
-                                log.Add($"{intezmenyvezSor} Intézmény vezető formátum hiba.");
+                                log.Add($"{intezmenyvezSor} Intézmény vezető formátum hiba.  {i}. sor");
                                 continue;
                             }
                             int tol = 0;
@@ -168,13 +171,13 @@ namespace DIMU.BLL.Services
                             }
                             catch
                             {
-                                log.Add($"{intezmenyvezTolIg} Intézmény vezető év dátum formátum hiba. {intezmenyvezSplit[0]} kihagyva.");
+                                log.Add($"{intezmenyvezSplit[1]} Intézmény vezető év dátum formátum hiba. {intezmenyvezSplit[0]} kihagyva.  {i}. sor");
                                 continue;
                             }
                             int ig = 0;
                             if(intezmenyvezTolIg.Length != 2)
                             {
-                                log.Add($"{intezmenyvezTolIg} Intézmény vezető év dátum formátum hiba. {intezmenyvezSplit[0]} kihagyva.");
+                                log.Add($"{intezmenyvezSplit[1]} Intézmény vezető év dátum formátum hiba. {intezmenyvezSplit[0]} kihagyva.  {i}. sor");
                                 continue;
                             }
                             if (!String.IsNullOrEmpty(intezmenyvezTolIg[1]))
@@ -185,7 +188,7 @@ namespace DIMU.BLL.Services
                                 }
                                 catch
                                 {
-                                    log.Add($"{intezmenyvezTolIg[1]} Intézmény vezető év dátum formátum hiba. {intezmenyvezSplit[0]} kihagyva.");
+                                    log.Add($"{intezmenyvezTolIg[1]} Intézmény vezető év dátum formátum hiba. {intezmenyvezSplit[0]} kihagyva.  {i}. sor");
                                     continue;
                                 }
                             }
@@ -225,7 +228,7 @@ namespace DIMU.BLL.Services
                         }
                     }
 
-                    var intezemenyHelyszin = context.IntezmenyHelyszinek.Where(ih => ih.Helyszin.Equals(Helyszin)).FirstOrDefault();
+                    var intezemenyHelyszin = context.IntezmenyHelyszinek.Where(ih => ih.Helyszin.Equals(Helyszin) && ih.Nyitas == Nyitas).FirstOrDefault();
                     if (intezemenyHelyszin == null)
                     {
                         intezemenyHelyszin = new IntezmenyHelyszin
@@ -244,6 +247,99 @@ namespace DIMU.BLL.Services
                 }
             }
             return log;
+        }
+
+        public async Task<List<string>> ImportEsemenyekFromExcel(Stream excelFile)
+        {
+            List<string> log = new List<string>();
+            using (TextFieldParser csvParser = new TextFieldParser("F:\\Downloads\\kiallitasok.csv", Encoding.UTF8))
+            {
+                csvParser.SetDelimiters(new string[] { "," });
+                //tényleges adatig üres olvasás
+                var firstfield = csvParser.ReadFields().First();
+                int i = 1;
+                while (firstfield != "Intézmény")
+                {
+                    i++;
+                    firstfield = csvParser.ReadFields().First();
+                    if (i >= 30)
+                        throw new ArgumentException("A fájl nem megfelelően lett tagolva (fejléc hiányzik)");
+                }
+
+                string[] fields;
+                while (!csvParser.EndOfData)
+                {
+                    i++;
+
+                    fields = csvParser.ReadFields();
+
+                    string intezmenyNev = fields[0];
+                    var intezmeny = context.Intezmenyek.Include(intezmeny => intezmeny.Esemenyek).Where(intezmeny => intezmeny.Nev == intezmenyNev).FirstOrDefault();
+                    if (intezmeny == null)
+                    {
+                        log.Add($"Nem létező intézmény. {intezmenyNev} {i}. sor.");
+                        continue;
+                    }
+
+                    string[] esemenyek = fields[1].Split('\n');
+
+                    foreach(var esemeny in esemenyek)
+                    {
+                        string esemenyNev;
+                        string datum;
+                        string szervezo = "";
+                        var esemenySplit = esemeny.Split(";");
+                        try
+                        {
+                            datum = esemenySplit[0];
+                            esemenyNev = esemenySplit[1];
+                        }
+                        catch
+                        {
+                            log.Add($"Esemény formátum nem megfelelő ( {esemeny} ). {i}. sor.");
+                            continue;
+                        }
+                        try
+                        {
+                            szervezo = esemenySplit[2];
+                        }
+                        catch 
+                        { 
+                            //szervezo nem kotelezo
+                        }
+                        if(!intezmeny.Esemenyek.Any(letezoEsemeny => letezoEsemeny.Nev == esemenyNev))
+                        {
+                            intezmeny.Esemenyek.Add(new Esemeny
+                            {
+                                Datum = datum,
+                                Nev = esemenyNev,
+                                Szervezo = szervezo
+                            });
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                }
+                return log;
+            }
+        }
+
+        public async Task PurgeDatabase()
+        {
+            var esemenyek = context.Esemenyek;
+            context.Esemenyek.RemoveRange(esemenyek);
+            await context.SaveChangesAsync();
+
+            var intezmenyVezetok = context.IntezmenyVezetok;
+            context.IntezmenyVezetok.RemoveRange(intezmenyVezetok);
+            await context.SaveChangesAsync();
+
+            var intezmenyHelyzinek = context.IntezmenyHelyszinek;
+            context.IntezmenyHelyszinek.RemoveRange(intezmenyHelyzinek);
+            await context.SaveChangesAsync();
+
+            var intezmenyek = context.Intezmenyek;
+            context.Intezmenyek.RemoveRange(intezmenyek);
+            await context.SaveChangesAsync();
         }
 
         public IntezmenyTipus? GetIntezmenyTipusFromString(string tipus)

@@ -44,7 +44,7 @@ namespace DIMU.Web.Controllers
         }
 
         [HttpPost]
-        [Route("importdata")]
+        [Route("import/intezmenyek")]
         public async Task<ActionResult<List<String>>> ImportFromExcel()
         {
             Microsoft.AspNetCore.Http.IFormFile file=null;
@@ -67,6 +67,47 @@ namespace DIMU.Web.Controllers
             }
 
             return Ok(log);
+        }
+
+        [HttpPost]
+        [Route("import/esemenyek")]
+        public async Task<ActionResult<List<String>>> ImportEsemenyFromExcel()
+        {
+            Microsoft.AspNetCore.Http.IFormFile file = null;
+            try
+            {
+                file = Request.Form.Files.FirstOrDefault();
+            }
+            catch
+            {
+
+            }
+            List<string> log;
+            try
+            {
+                log = await _importerService.ImportEsemenyekFromExcel(file?.OpenReadStream());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+
+            return Ok(log);
+        }
+
+        [HttpDelete]
+        [Route("purgeDatabase")]
+        public async Task<IActionResult> PurgeDatabase()
+        {
+            try
+            {
+                await _importerService.PurgeDatabase();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            return Ok();
         }
 
         [HttpPost]
