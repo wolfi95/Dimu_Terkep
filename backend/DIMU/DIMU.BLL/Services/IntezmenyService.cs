@@ -88,19 +88,17 @@ namespace DIMU.BLL.Services
             }
 
             return await intezemenyQuery.SelectMany( i => i.IntezmenyHelyszinek
-                .Where(ih => 
-                        (searchParams.MukodesTol != null 
-                            ? searchParams.MukodesTol <= ih.Koltozes || ih.Koltozes == null 
-                            : true) 
-                         && (searchParams.MukodesIg != null 
-                            ? searchParams.MukodesIg >= ih.Nyitas 
-                            : true))
+                .Where(ih =>
+                        (searchParams.MukodesTol == null
+                            || searchParams.MukodesTol <= ih.Koltozes || ih.Koltozes == null)
+                         && (searchParams.MukodesIg == null
+                            || searchParams.MukodesIg >= ih.Nyitas))
                 .Select( ih => new IntezmenyPinDto{
                     IntezmenyId = i.Id,
                     IntezmenyTipus = i.Tipus,
                     Latitude = ih.Latitude,
                     Longitude = ih.Longitude
-            })).ToListAsync();
+            })).ToListAsync().ConfigureAwait(false);
         }
 
         private bool IntezmenyExists(Guid id)
