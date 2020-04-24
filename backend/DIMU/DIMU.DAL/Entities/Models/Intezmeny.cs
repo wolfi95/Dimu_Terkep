@@ -10,7 +10,7 @@ namespace DIMU.DAL.Entities.Models
         public String Nev { get; set; }
         public int Alapitas { get; set; }
         public int? Megszunes { get; set; }
-        public List<IntezmenyHelyszin> IntezmenyHelyszinek { get; set; }        
+        public List<IntezmenyHelyszin> IntezmenyHelyszinek { get; set; }
         public IntezmenyTipus Tipus { get; set; }
         public List<IntezmenyVezeto> IntezmenyVezetok { get; set; }
         public String Leiras { get; set; }

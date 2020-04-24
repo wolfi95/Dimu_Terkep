@@ -27,33 +27,21 @@ namespace DIMU.BLL.Services
                                     .Include(i => i.IntezmenyVezetok)
                                     .Include(i => i.Esemenyek)
                                     .Where(i => i.Id == id)
-                                    .FirstOrDefaultAsync();
+                                    .FirstOrDefaultAsync().ConfigureAwait(false);
 
             if (intezmeny == null)
                 return null;
-
-            List<string> ivk = new List<string>();
-            foreach(var iv in intezmeny.IntezmenyVezetok)
-            {
-                if (iv.Ig != null)
-                {
-                    ivk.Add(new string(iv.Nev + " " + iv.Tol.ToString() + " - " + iv.Ig.ToString()));
-                }
-                else
-                {
-                    ivk.Add(new string(iv.Nev + " " + iv.Tol.ToString() + "-" + "től"));
-                }
-            }
 
             return new IntezmenyDetailDto
             {
                 Nev = intezmeny.Nev,
                 Alapitas = intezmeny.Alapitas,
                 Megszunes = intezmeny.Megszunes,
-                IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => ih.Helyszin + " (" + ih.Nyitas.ToString() + " - " + ih.Koltozes?.ToString() + ")").ToList(),
-                IntezmenyVezetok = ivk,
+                IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => new IntezmenyHelyszinDto{
+                    Helyszin = ih.Helyszin, Nyitas = ih.Nyitas, Koltozes = ih.Koltozes, Latitude = ih.Latitude, Longitude =  ih.Longitude}).ToList(),
+                IntezmenyVezetok = intezmeny.IntezmenyVezetok.Select(iv => new IntezmenyVezetoDto{Nev = iv.Nev, Tol = iv.Tol, Ig = iv.Ig}).ToList(),
                 Leiras = intezmeny.Leiras,
-                Esemenyek = intezmeny.Esemenyek.Select(e => e.Datum + " " + e.Szervezo + ": " + e.Nev).ToList(),
+                Esemenyek = intezmeny.Esemenyek.Select(e => new EsemenyDto {Nev = e.Nev, Datum = e.Datum, Szervezo = e.Szervezo}).ToList(),
                 Link = intezmeny.Link,
                 Fotok = intezmeny.Fotok,
                 Social = intezmeny.Social,
@@ -91,11 +79,11 @@ namespace DIMU.BLL.Services
             if (searchParams.MukodesIg != null)
             {
                 //intezmenyre vonatkozo
-                intezemenyQuery = intezemenyQuery.Where(i => i.Alapitas <= searchParams.MukodesIg);                
+                intezemenyQuery = intezemenyQuery.Where(i => i.Alapitas <= searchParams.MukodesIg);
             }
 
             if (searchParams.MukodesTol != null)
-            {                
+            {
                 intezemenyQuery = intezemenyQuery.Where(i => i.Megszunes >= searchParams.MukodesTol || i.Megszunes == null);
             }
 
