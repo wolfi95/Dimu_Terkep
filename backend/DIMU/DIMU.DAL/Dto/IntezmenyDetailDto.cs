@@ -8,6 +8,7 @@ namespace DIMU.DAL.Dto
     public class IntezmenyDetailDto
     {
         public String Nev { get; set; }
+        public IntezmenyTipus Tipus { get; set; }
         public int Alapitas { get; set; }
         public int? Megszunes { get; set; }
         public List<IntezmenyHelyszinDto> IntezmenyHelyszinek { get; set; }

@@ -35,6 +35,7 @@ namespace DIMU.BLL.Services
             return new IntezmenyDetailDto
             {
                 Nev = intezmeny.Nev,
+                Tipus = intezmeny.Tipus,
                 Alapitas = intezmeny.Alapitas,
                 Megszunes = intezmeny.Megszunes,
                 IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => new IntezmenyHelyszinDto{
