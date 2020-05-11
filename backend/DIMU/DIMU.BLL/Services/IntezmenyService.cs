@@ -59,17 +59,22 @@ namespace DIMU.BLL.Services
 
             if (!String.IsNullOrEmpty(searchParams.IntezmenyCim))
             {
-                intezemenyQuery = intezemenyQuery.Where(i => i.IntezmenyHelyszinek.Any(ih => ih.Helyszin.Contains(searchParams.IntezmenyCim)));
+                intezemenyQuery = intezemenyQuery.Where(i => i.IntezmenyHelyszinek.Any(ih => ih.Helyszin.ToLower().Contains(searchParams.IntezmenyCim.ToLower())));
             }
 
             if (!String.IsNullOrEmpty(searchParams.IntezmenyNev))
             {
-                intezemenyQuery = intezemenyQuery.Where(i => i.Nev.Contains(searchParams.IntezmenyNev));
+                intezemenyQuery = intezemenyQuery.Where(i => i.Nev.ToLower().Contains(searchParams.IntezmenyNev.ToLower()));
             }
             //TODO: idot is nezzen ha kell(nincs tisztazva)
             if (!String.IsNullOrEmpty(searchParams.IntezmenyVezeto))
             {
-                intezemenyQuery = intezemenyQuery.Where(i => i.IntezmenyVezetok.Any(iv => iv.Nev.Contains(searchParams.IntezmenyCim)));
+                intezemenyQuery = intezemenyQuery.Where(i => i.IntezmenyVezetok.Any(iv => iv.Nev.ToLower().Contains(searchParams.IntezmenyVezeto.ToLower())));
+            }
+
+            if (!String.IsNullOrEmpty(searchParams.EsemenyNev))
+            {
+                intezemenyQuery = intezemenyQuery.Where(i => i.Esemenyek.Any(es => es.Nev.ToLower().Contains(searchParams.EsemenyNev.ToLower())));
             }
 
             if(searchParams.IntezmenyTipus != null)
