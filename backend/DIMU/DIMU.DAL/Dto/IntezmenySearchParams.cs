@@ -10,6 +10,7 @@ namespace DIMU.DAL.Dto
         public string IntezmenyNev { get; set; }
         public string IntezmenyCim { get; set; }
         public string IntezmenyVezeto { get; set; }
+        public string EsemenyNev { get; set; }
         public int? MukodesTol { get; set; }
         public int? MukodesIg { get; set; }
         public IntezmenyTipus?[] IntezmenyTipus { get; set; }
