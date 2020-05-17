@@ -59,6 +59,21 @@ namespace DIMU.BLL.Services
                 while (!csvParser.EndOfData)
                 {
                     i++;
+                    
+                    Intezmenynev = "";
+                    Alapitas = 0;
+                    Megszunes = 0;
+                    Helyszin = "";
+                    Nyitas = 0;
+                    Koltozes = 0;
+                    Gps = "";
+                    Tipus = "";
+                    IntezmenyVezetok = "";
+                    Leiras = "";
+                    Kepek = "";
+                    Video = "";
+                    Hivatkozasok = "";
+                    Social = "";
 
                     fields = csvParser.ReadFields();
 
