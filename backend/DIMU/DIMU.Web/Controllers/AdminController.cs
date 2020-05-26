@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace DIMU.Web.Controllers
 {
     [ApiController]
-    [Route("admin")]
+    [Route("api/admin")]
     [Authorize]
     public class AdminController : Controller
     {

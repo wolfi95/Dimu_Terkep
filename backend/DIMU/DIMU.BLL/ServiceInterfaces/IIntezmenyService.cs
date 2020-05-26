@@ -13,6 +13,7 @@ namespace DIMU.BLL.ServiceInterfaces
         public Task<IntezmenyDetailDto> GetIntezmenyAsync(Guid id);
         public Task<bool> PutIntezmeny(Guid id, Intezmeny intezmeny);
         public Task<Intezmeny> PostIntezmeny(Intezmeny intezmeny);
-        public Task<bool> DeleteIntezmeny(Guid Id);
+        public Task<bool> DeleteIntezmeny(Guid Id); 
+        public Task<IEnumerable<IntezmenyHeader>> GetIntezmenyHeadersAsync(string searchParam);
     }
 }

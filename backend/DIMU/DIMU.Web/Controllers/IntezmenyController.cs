@@ -41,12 +41,21 @@ namespace DIMU.Web.Controllers
             return Ok(intezmeny);
         }
 
+        [Authorize]
+        [HttpPost("intezmenyHeaders")]
+        public async Task<ActionResult<IntezmenyDetailDto>> GetIntezmenyHeaders(string searchParam)
+        {
+            var intezmenyek = await intezmenyService.GetIntezmenyHeadersAsync(searchParam);           
+
+            return Ok(intezmenyek);
+        }        
+
         // PUT: api/Intezmeny/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutIntezmeny(Guid id, Intezmeny intezmeny)
+        public async Task<IActionResult> PutIntezmeny(Guid id,[FromBody] Intezmeny intezmeny)
         {
             if (id != intezmeny.Id)
             {
@@ -77,7 +86,7 @@ namespace DIMU.Web.Controllers
         [HttpPost]
         [Route("/api/Intezemeny/new")]
         [Authorize]
-        public async Task<ActionResult<Intezmeny>> PostIntezmeny(Intezmeny intezmeny)
+        public async Task<ActionResult<Intezmeny>> PostIntezmeny([FromBody]Intezmeny intezmeny)
         {
             intezmeny = await intezmenyService.PostIntezmeny(intezmeny);
             return CreatedAtAction("GetIntezmeny", new { id = intezmeny.Id }, intezmeny);

@@ -150,5 +150,22 @@ namespace DIMU.BLL.Services
 
             return true;
         }
+
+        public async Task<IEnumerable<IntezmenyHeader>> GetIntezmenyHeadersAsync(string searchParam)
+        {
+            var query = context.Intezmenyek.Select(i => new IntezmenyHeader 
+            {
+                Alapitas = i.Alapitas,
+                IntezmenyId = i.Id,
+                Megszunes = i.Megszunes,
+                Nev = i.Nev
+            });
+
+            if (!String.IsNullOrEmpty(searchParam))
+            {
+                query = query.Where(i => i.Nev.ToLower().Trim().Contains(searchParam.ToLower().Trim()));
+            }
+            return await query.ToListAsync();
+        }
     }
 }
