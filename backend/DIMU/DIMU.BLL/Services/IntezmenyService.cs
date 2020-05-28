@@ -220,6 +220,9 @@ namespace DIMU.BLL.Services
 
             if (intezmeny == null)
                 return false;
+            context.IntezmenyVezetok.RemoveRange(intezmeny.IntezmenyVezetok);
+            context.Esemenyek.RemoveRange(intezmeny.Esemenyek);
+            context.IntezmenyHelyszinek.RemoveRange(intezmeny.IntezmenyHelyszinek);
 
             context.Intezmenyek.Remove(intezmeny);
             await context.SaveChangesAsync();
