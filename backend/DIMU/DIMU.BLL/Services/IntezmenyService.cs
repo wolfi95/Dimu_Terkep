@@ -216,7 +216,7 @@ namespace DIMU.BLL.Services
 
         public async Task<bool> DeleteIntezmeny(Guid id)
         {
-            var intezmeny = await context.Intezmenyek.FindAsync(id);
+            var intezmeny = await context.Intezmenyek.Include(i => i.IntezmenyHelyszinek).Include(i => i.IntezmenyVezetok).Include(i => i.Esemenyek).FirstOrDefaultAsync(i => i.Id == id);
 
             if (intezmeny == null)
                 return false;
