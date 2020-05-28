@@ -132,7 +132,7 @@ namespace DIMU.BLL.Services
                 {
                     Helyszin = helyzin.Helyszin,
                     Intezmeny = editableIntezmeny,
-                    Koltozes = helyzin.Koltozes,
+                    Koltozes = helyzin.Koltozes != 0 ? helyzin.Koltozes : null,
                     Latitude = helyzin.Latitude,
                     Longitude = helyzin.Longitude,
                     Nyitas = helyzin.Nyitas
@@ -145,7 +145,7 @@ namespace DIMU.BLL.Services
                 context.IntezmenyVezetok.Add(new IntezmenyVezeto
                 {
                     Intezmeny = editableIntezmeny,
-                    Ig = vezeto.Ig,
+                    Ig = vezeto.Ig != 0 ? vezeto.Ig : null,
                     Nev = vezeto.Nev,
                     Tol = vezeto.Tol
                 });
