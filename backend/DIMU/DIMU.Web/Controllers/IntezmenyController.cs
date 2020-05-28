@@ -57,10 +57,6 @@ namespace DIMU.Web.Controllers
         [Authorize]
         public async Task<IActionResult> PutIntezmeny(Guid id,[FromBody] Intezmeny intezmeny)
         {
-            if (id != intezmeny.Id)
-            {
-                return BadRequest();
-            }
             bool result;
             try
             {

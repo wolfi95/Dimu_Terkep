@@ -38,11 +38,17 @@ namespace DIMU.BLL.Services
                 Tipus = intezmeny.Tipus,
                 Alapitas = intezmeny.Alapitas,
                 Megszunes = intezmeny.Megszunes,
-                IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => new IntezmenyHelyszinDto{
-                    Helyszin = ih.Helyszin, Nyitas = ih.Nyitas, Koltozes = ih.Koltozes, Latitude = ih.Latitude, Longitude =  ih.Longitude}).ToList(),
-                IntezmenyVezetok = intezmeny.IntezmenyVezetok.Select(iv => new IntezmenyVezetoDto{Nev = iv.Nev, Tol = iv.Tol, Ig = iv.Ig}).ToList(),
+                IntezmenyHelyszinek = intezmeny.IntezmenyHelyszinek.Select(ih => new IntezmenyHelyszinDto
+                {
+                    Helyszin = ih.Helyszin,
+                    Nyitas = ih.Nyitas,
+                    Koltozes = ih.Koltozes,
+                    Latitude = ih.Latitude,
+                    Longitude = ih.Longitude
+                }).ToList(),
+                IntezmenyVezetok = intezmeny.IntezmenyVezetok.Select(iv => new IntezmenyVezetoDto { Nev = iv.Nev, Tol = iv.Tol, Ig = iv.Ig }).ToList(),
                 Leiras = intezmeny.Leiras,
-                Esemenyek = intezmeny.Esemenyek.Select(e => new EsemenyDto {Nev = e.Nev, Datum = e.Datum, Szervezo = e.Szervezo}).ToList(),
+                Esemenyek = intezmeny.Esemenyek.Select(e => new EsemenyDto { Nev = e.Nev, Datum = e.Datum, Szervezo = e.Szervezo }).ToList(),
                 Link = intezmeny.Link,
                 Fotok = intezmeny.Fotok,
                 Social = intezmeny.Social,
@@ -52,10 +58,10 @@ namespace DIMU.BLL.Services
 
         public async Task<IEnumerable<IntezmenyPinDto>> GetIntezmenyekAsync(IntezmenySearchParams searchParams)
         {
-           IQueryable<Intezmeny> intezemenyQuery = context.Intezmenyek
-                                    .Include(i => i.Esemenyek)
-                                    .Include(i => i.IntezmenyHelyszinek)
-                                    .Include(i => i.IntezmenyVezetok);
+            IQueryable<Intezmeny> intezemenyQuery = context.Intezmenyek
+                                     .Include(i => i.Esemenyek)
+                                     .Include(i => i.IntezmenyHelyszinek)
+                                     .Include(i => i.IntezmenyVezetok);
 
             if (!String.IsNullOrEmpty(searchParams.IntezmenyCim))
             {
@@ -77,7 +83,7 @@ namespace DIMU.BLL.Services
                 intezemenyQuery = intezemenyQuery.Where(i => i.Esemenyek.Any(es => es.Nev.ToLower().Contains(searchParams.EsemenyNev.ToLower())));
             }
 
-            if(searchParams.IntezmenyTipus != null)
+            if (searchParams.IntezmenyTipus != null)
             {
                 intezemenyQuery = intezemenyQuery.Where(i => searchParams.IntezmenyTipus.Contains(i.Tipus));
             }
@@ -93,18 +99,19 @@ namespace DIMU.BLL.Services
                 intezemenyQuery = intezemenyQuery.Where(i => i.Megszunes >= searchParams.MukodesTol || i.Megszunes == null);
             }
 
-            return await intezemenyQuery.SelectMany( i => i.IntezmenyHelyszinek
-                .Where(ih =>
-                        (searchParams.MukodesTol == null
-                            || searchParams.MukodesTol <= ih.Koltozes || ih.Koltozes == null)
-                         && (searchParams.MukodesIg == null
-                            || searchParams.MukodesIg >= ih.Nyitas))
-                .Select( ih => new IntezmenyPinDto{
-                    IntezmenyId = i.Id,
-                    IntezmenyTipus = i.Tipus,
-                    Latitude = ih.Latitude,
-                    Longitude = ih.Longitude
-            })).ToListAsync().ConfigureAwait(false);
+            return await intezemenyQuery.SelectMany(i => i.IntezmenyHelyszinek
+               .Where(ih =>
+                       (searchParams.MukodesTol == null
+                           || searchParams.MukodesTol <= ih.Koltozes || ih.Koltozes == null)
+                        && (searchParams.MukodesIg == null
+                           || searchParams.MukodesIg >= ih.Nyitas))
+               .Select(ih => new IntezmenyPinDto
+               {
+                   IntezmenyId = i.Id,
+                   IntezmenyTipus = i.Tipus,
+                   Latitude = ih.Latitude,
+                   Longitude = ih.Longitude
+               })).ToListAsync().ConfigureAwait(false);
         }
 
         private bool IntezmenyExists(Guid id)
@@ -114,18 +121,65 @@ namespace DIMU.BLL.Services
 
         public async Task<bool> PutIntezmeny(Guid id, Intezmeny intezmeny)
         {
-            context.Entry(intezmeny).State = EntityState.Modified;
+            var editableIntezmeny = await context.Intezmenyek.Include(i => i.IntezmenyHelyszinek).Include(i => i.IntezmenyVezetok).Include(i => i.Esemenyek).FirstOrDefaultAsync(i => i.Id == id);
+            if (editableIntezmeny == null)
+                return false;
+
+            context.IntezmenyHelyszinek.RemoveRange(editableIntezmeny.IntezmenyHelyszinek);
+            foreach (var helyzin in intezmeny.IntezmenyHelyszinek)
+            {
+                context.IntezmenyHelyszinek.Add(new IntezmenyHelyszin
+                {
+                    Helyszin = helyzin.Helyszin,
+                    Intezmeny = editableIntezmeny,
+                    Koltozes = helyzin.Koltozes,
+                    Latitude = helyzin.Latitude,
+                    Longitude = helyzin.Longitude,
+                    Nyitas = helyzin.Nyitas
+                });
+            }
+
+            context.IntezmenyVezetok.RemoveRange(editableIntezmeny.IntezmenyVezetok);
+            foreach (var vezeto in intezmeny.IntezmenyVezetok)
+            {
+                context.IntezmenyVezetok.Add(new IntezmenyVezeto
+                {
+                    Intezmeny = editableIntezmeny,
+                    Ig = vezeto.Ig,
+                    Nev = vezeto.Nev,
+                    Tol = vezeto.Tol
+                });
+            }
+
+            context.Esemenyek.RemoveRange(editableIntezmeny.Esemenyek);
+            foreach (var esemeny in intezmeny.Esemenyek)
+            {
+                context.Esemenyek.Add(new Esemeny
+                {
+                    Intezmeny = editableIntezmeny,
+                    Datum = esemeny.Datum,
+                    Nev = esemeny.Nev,
+                    Szervezo = esemeny.Szervezo
+                });
+            }
+
+            editableIntezmeny.Alapitas = intezmeny.Alapitas;
+            editableIntezmeny.Fotok = intezmeny.Fotok;
+            editableIntezmeny.Leiras = intezmeny.Leiras;
+            editableIntezmeny.Link = intezmeny.Link;
+            editableIntezmeny.Megszunes = intezmeny.Megszunes != 0 ? intezmeny.Megszunes : null;
+            editableIntezmeny.Nev = intezmeny.Nev;
+            editableIntezmeny.Social = intezmeny.Social;
+            editableIntezmeny.Tipus = intezmeny.Tipus;
+            editableIntezmeny.Videok = intezmeny.Videok;
 
             try
             {
                 await context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!IntezmenyExists(id))
-                    return false;
-                else
-                    throw;
+                throw;
             }
 
             return true;
@@ -153,7 +207,7 @@ namespace DIMU.BLL.Services
 
         public async Task<IEnumerable<IntezmenyHeader>> GetIntezmenyHeadersAsync(string searchParam)
         {
-            var query = context.Intezmenyek.Select(i => new IntezmenyHeader 
+            var query = context.Intezmenyek.Select(i => new IntezmenyHeader
             {
                 Alapitas = i.Alapitas,
                 IntezmenyId = i.Id,
