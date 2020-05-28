@@ -187,6 +187,28 @@ namespace DIMU.BLL.Services
 
         public async Task<Intezmeny> PostIntezmeny(Intezmeny intezmeny)
         {
+            if (intezmeny.Megszunes == 0)
+                intezmeny.Megszunes = null;
+            foreach (var esemeny in intezmeny.Esemenyek)
+            {
+                esemeny.Intezmeny = intezmeny;
+                context.Esemenyek.Add(esemeny);
+            }
+            foreach (var vezeto in intezmeny.IntezmenyVezetok)
+            {
+                if (vezeto.Ig == 0)
+                    vezeto.Ig = null;
+                vezeto.Intezmeny = intezmeny;
+                context.IntezmenyVezetok.Add(vezeto);
+            }
+            foreach (var helyszin in intezmeny.IntezmenyHelyszinek)
+            {
+                if (helyszin.Koltozes == 0)
+                    helyszin.Koltozes = null;
+                helyszin.Intezmeny = intezmeny;
+                context.IntezmenyHelyszinek.Add(helyszin);
+            }
+
             context.Intezmenyek.Add(intezmeny);
             await context.SaveChangesAsync();
             return intezmeny;

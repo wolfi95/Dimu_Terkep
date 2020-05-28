@@ -80,10 +80,13 @@ namespace DIMU.Web.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        [Route("/api/Intezemeny/new")]
+        [Route("new")]
         [Authorize]
         public async Task<ActionResult<Intezmeny>> PostIntezmeny([FromBody]Intezmeny intezmeny)
         {
+            if (String.IsNullOrEmpty(intezmeny.Nev)){
+                return BadRequest("Intézmény név nem lehet null");
+            }            
             intezmeny = await intezmenyService.PostIntezmeny(intezmeny);
             return CreatedAtAction("GetIntezmeny", new { id = intezmeny.Id }, intezmeny);
         }
