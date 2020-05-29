@@ -88,7 +88,7 @@ namespace DIMU.Web.Controllers
                 return BadRequest("Intézmény név nem lehet null");
             }            
             intezmeny = await intezmenyService.PostIntezmeny(intezmeny);
-            return CreatedAtAction("GetIntezmeny", new { id = intezmeny.Id }, intezmeny);
+            return Ok();
         }
 
         // DELETE: api/Intezmeny/5
