@@ -160,7 +160,7 @@ namespace DIMU.Web
 
             app.UseCors(
                 //cross origin policies here
-                options => options.WithOrigins("http://localhost:3000/").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()
+                options => options.WithOrigins("http://localhost:3000/","*.herokuapp.com").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()
                 );
 
             app.UseSwagger();
